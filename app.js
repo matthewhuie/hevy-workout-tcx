@@ -41,11 +41,13 @@ function createTcx() {
     // Calculate total duration in seconds
     const totalSeconds = endTsSec - startTsSec;
     
-    // Format start time for the Activity ID (ISO format)
+    // Format start and end times for the Activity ID (ISO format) and Trackpoints
     const startTimeIso = new Date(startTsSec * 1000).toISOString();
+    const endTimeIso = new Date(endTsSec * 1000).toISOString();
 
-    // 3. Extract Heart Rate Samples
+    // 3. Extract Biometrics 
     const biometrics = data.biometrics || {};
+    const calories = biometrics.total_calories || 0;
     const hrSamples = biometrics.heart_rate_samples || [];
 
     if (hrSamples.length === 0) {
@@ -62,15 +64,24 @@ function createTcx() {
   xmlns="http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <Activities>
-    <Activity Sport="Other">
+    <Activity Sport="WeightTraining">
       <Id>${startTimeIso}</Id>
       <Lap StartTime>${startTimeIso}">
         <TotalTimeSeconds>${totalSeconds}</TotalTimeSeconds>
         <DistanceMeters>0.0</DistanceMeters>
-        <Calories>${biometrics.total_calories || 0}</Calories>
+        <Calories>${calories}</Calories>
         <Intensity>Active</Intensity>
         <TriggerMethod>Manual</TriggerMethod>
         <Track>
+`;
+
+    // 5-pre. Add dummy Trackpoint for start time
+    tcxContent += `          <Trackpoint>
+            <Time>${startTimeIso}</Time>
+            <HeartRateBpm>
+              <Value>${Math.round(hrSamples.at(0).bpm)}</Value>
+            </HeartRateBpm>
+          </Trackpoint>
 `;
 
     // 5. Loop through samples and add Trackpoints
@@ -81,6 +92,7 @@ function createTcx() {
 
         if (tsMs && bpm) {
             const timeIso = formatTimestamp(tsMs);
+
             tcxContent += `          <Trackpoint>
             <Time>${timeIso}</Time>
             <HeartRateBpm>
@@ -92,11 +104,42 @@ function createTcx() {
         }
     });
 
-    // 6. Close Tags
+    // 5-post. Add dummy Trackpoint for end time
+    tcxContent += `          <Trackpoint>
+            <Time>${endTimeIso}</Time>
+            <HeartRateBpm>
+              <Value>${Math.round(hrSamples.at(-1).bpm)}</Value>
+            </HeartRateBpm>
+          </Trackpoint>
+`;
+
+    // 6. Close Track and Lap
     tcxContent += `        </Track>
       </Lap>
-    </Activity>
+`;
+
+    // 7. Add Creator and Extensions Blocks
+    tcxContent += `      <Creator xsi:type="Device_t">
+        <Name>Hevy</Name>
+      </Creator>
+      <Extensions xsi:type="Extensions_t">
+        <x:LX>
+          <ActiveSeconds>${totalSeconds}</ActiveSeconds>
+          <ElapsedSeconds>${totalSeconds}</ElapsedSeconds>
+          <DistanceMeters>0</DistanceMeters>
+          <AvgSpeed>0</AvgSpeed>
+          <KiloCalories>${calories}</KiloCalories>
+          <StepCount>0</StepCount>
+        </x:LX>
+      </Extensions>
+`;
+
+    // 8. Close Activity and Root
+    tcxContent += `    </Activity>
   </Activities>
+  <Author xsi:type="Application_t">
+    <Name>matthewhuie/hevy-workout-tcx</Name>
+  </Author>
 </TrainingCenterDatabase>
 `;
 
