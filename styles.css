@@ -1,0 +1,26 @@
+#hevy-workout-tcx-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 9999;
+  padding: 12px 24px;
+  background-color: #fc4c02;
+  color: white;
+  border: none;
+  border-radius: 50px;
+  font-family: 'Roboto', 'Open Sans', 'Helvetica Neue', Arial, sans-serif;
+  font-weight: bold;
+  font-size: 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.2s;
+}
+
+#hevy-workout-tcx-btn:hover {
+  background-color: #e34402;
+  transform: translateY(-2px);
+}
+
+#hevy-workout-tcx-btn:active {
+  transform: translateY(0);
+}

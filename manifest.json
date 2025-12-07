@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "Hevy Workout to TCX",
+  "version": "1.0",
+  "description": "Export Hevy workouts to TCX",
+  "permissions": ["activeTab", "scripting"],
+  "web_accessible_resources": [
+    {
+      "resources": ["inject.js"],
+      "matches": ["https://hevy.com/*"]
+    }
+  ],
+  "content_scripts": [
+    {
+      "js": ["content.js"],
+      "css": ["styles.css"],
+      "matches": ["https://hevy.com/workout/*"]
+    }
+  ]
+}
