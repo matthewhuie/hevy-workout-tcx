@@ -16,5 +16,6 @@
       "css": ["styles.css"],
       "matches": ["https://hevy.com/workout/*"]
     }
-  ]
+  ],
+  "icons": { "192": "icons/hevy-workout-tcx-192px.png" }
 }
