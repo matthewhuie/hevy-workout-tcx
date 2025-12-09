@@ -6,7 +6,7 @@ Currently, this is only available via this repo.  Clone this repo and load it as
 
 ## TODOs
 - [x] Working MVP
-- [ ] Packaged .crx as a GitHub release
+- [x] Packaged .crx as a GitHub release
 - [ ] Publish on Chrome Web Store
 
 ## Links
